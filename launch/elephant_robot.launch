@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+    <node name="esp_ros_bridge" pkg="elephant_robot" type="uart.py"/>
+    <node name="load_driver" pkg="elephant_robot" type="load_driver.py"/>
+    <node name="pick_driver" pkg="elephant_robot" type="pick_driver.py"/>
+   <node name="tof_interface" pkg="elephant_robot" type="tof_interface.py"/>
+   <node name="mpu_interface" pkg="elephant_robot" type="mpu_interface.py"/>
+</launch>
