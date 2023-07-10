@@ -1,9 +1,12 @@
 # Elephant-Robot
 
 ![ER](/images/ER.png)
- <img src="images/ER.png" width="1000" height="1000"/>
 ## Mechanisms
  
+
+https://github.com/PICT-Robotics-23/Elephant-Robot/assets/87944335/360875ad-4aa9-4d1b-9d9d-d2178caf849c
+
+
 ## Design Plan
 
 ### What will be automated?
