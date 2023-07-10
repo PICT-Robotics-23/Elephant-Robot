@@ -1,6 +1,7 @@
 # Elephant-Robot
 
 ![ER](/images/ER.png)
+ <img src="images/ER.png" width="1000" height="1000"/>
 ## Mechanisms
  
 ## Design Plan
