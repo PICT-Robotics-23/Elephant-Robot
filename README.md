@@ -36,7 +36,7 @@ UART data transfer between the ESP32 and RPi utilized custom messages. Motors, c
 
 - **MotorArray Message**:
   - Array : Facilitates simultaneous transmission of multiple motor control sets
-
+```mermaid
 graph LR
     PS4((PS4 Controller)) --> ESP32((ESP32 Microcontroller))
     ESP32 --> RPi4((Raspberry Pi 4))
