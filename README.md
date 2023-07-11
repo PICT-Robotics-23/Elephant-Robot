@@ -41,6 +41,7 @@ graph LR
     PS4((PS4 Controller)) --> ESP32((ESP32 Microcontroller))
     ESP32 --> RPi4((Raspberry Pi 4))
     RPi4 --> Display((Display))
+```    
 
 #### Description of scripts
 
