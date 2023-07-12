@@ -59,27 +59,49 @@ In the final stage, Stages 2 and 3 were integrated. All the sensor values were p
 
 #### Description of scripts
 
+  
+
 - **Sensor Integration**:
-  The MPU6050 and Time-of-Flight (TOF) distance sensor communicates with the Raspberry Pi using I2C serial communication.
-  MPU6050 provides us with the acceleration and gyroscopic data that is used to calculate the pitch, which directly translates to the angle of the shooting mechanism.
-  The TOF Sensor is calibrated by placing it in an open space with no obstruction in LOS(Line-Of-Sight). The output of this sensor is the distance of the object in mm.
-  Both the scripts are initialized as publisher nodes, and the data is published continuously using ROS.
+
+	- The MPU6050 and Time-of-Flight (TOF) distance sensor communicates with the 		 Raspberry Pi using I2C serial communication.
+
+	- MPU6050 provides us with the acceleration and gyroscopic data that is used to calculate the pitch, which directly translates to the angle of the shooting mechanism.
+
+	- The TOF Sensor is calibrated by placing it in an open space with no obstruction in LOS(Line-Of-Sight). The output of this sensor is the distance of the object in mm.
+
+	- Both the scripts are initialized as publisher nodes, and the data is published continuously using ROS.
+
+  
 
 - **CLI**:
-  The CLI script is responsible for displaying the data to the operator during runtime. It is initialized as a subscriber node and reads the published data from the sensors.
-  CLI collects data from three sources:
-    - MPU6050 : Angle of the shooting mechanism
-    - TF-LUNA : Distance of the base plate from the shooting mechanism
-    - Shoot-PWM : PWM value passed to the shooting motors from esp32
-  argparser library is used to allow the user to only display data that is wanted. The user can disable certain parameters by initializing them to zero while launching the script. By default, all the parameters are enabled. 
+
+	- The CLI script is responsible for displaying the data to the operator during runtime. It is initialized as a subscriber node and reads the published data from the sensors.
+
+	- CLI collects data from three sources:
+
+		- MPU6050 : Angle of the shooting mechanism
+
+		- TF-LUNA : Distance of the base plate from the shooting mechanism
+
+		- Shoot-PWM : PWM value passed to the shooting motors from esp32
+
+	- argparser library is used to allow the user to only display data that is wanted. The user can disable certain parameters by initializing them to zero while launching the script. By default, all the parameters are enabled.
+
+  
 
 ```mermaid
+
 graph LR
-    Angle[MPU6050] -->|I2C| RPi4((Raspberry Pi 4))
-    TOF[TF-LUNA] -->|I2C| RPi4
-    PWM[Shoot Speed] -->|ESP32| RPi4
-    RPi4 ==>|USB CAM| Display((Mobile Screen))
-```   
+
+Angle[MPU6050] -->|I2C| RPi4((Raspberry Pi 4))
+
+TOF[TF-LUNA] -->|I2C| RPi4
+
+PWM[Shoot Speed] -->|ESP32| RPi4
+
+RPi4 ==>|USB CAM| Display((Mobile Screen))
+
+```
 
 ### ROSGRAPH
 
