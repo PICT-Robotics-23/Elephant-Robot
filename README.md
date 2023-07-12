@@ -4,13 +4,16 @@
 
 ## Mechanisms
  
- <!--GIF of picking mech  -->
+
 ### Picking Mechanism
+
+![Picking Mechanism](/images/Picking_Mechanism.gif)
 
 ### Loading and Shooting Mechanism
 
-<!-- GIF of load and shooting mech -->
-Check here <!-- [G-Drive link]  -->for the functional demonstration of Elephant Robot.
+![Shooting Mechanism](/images/Shooting_Mechanism.gif)
+
+Check [here](https://drive.google.com/drive/folders/12eOtcUv3KmfZOIFXidKJ_DFHE5_mUBqX?usp=drive_link) for the functional demonstration of Elephant Robot.
 
 ## Design Plan
 
