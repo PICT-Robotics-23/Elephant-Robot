@@ -1,10 +1,16 @@
 # Elephant-Robot
 
 ![ER](/images/ER.png)
+
 ## Mechanisms
  
+ <!--GIF of picking mech  -->
+### Picking Mechanism
 
+### Loading and Shooting Mechanism
 
+<!-- GIF of load and shooting mech -->
+Check here <!-- [G-Drive link]  -->for the functional demonstration of Elephant Robot.
 
 ## Design Plan
 
@@ -54,3 +60,6 @@ In the final stage, Stages 2 and 3 were integrated. All the sensor values were p
 #### Description of scripts
 
 ### ROSGRAPH
+
+
+## Locomotion Automation?
