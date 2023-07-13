@@ -9,6 +9,24 @@
 
 ![Picking Mechanism](/images/Picking_Mechanism.gif)
 
+<br><b>Components</b>
+| Name | Usage  |
+|-----------|-----------|
+| IG 32 Planetory DC Geared motor| Actuate base flaps to slide-in the rings on the base plate. |
+|IG 42 Planetory DC Geared motor| Rotate the pinion gears|
+| Rack and Pinion assembly| Used for converting rotational motion of <br> motors to linear motion, generating the lift process. |
+
+<b>Working</b>
+<p align="justify">
+The picking mechanism functions through a sequential two-step process. <br>
+<b>Step 1</b>: The stack of rings is loaded onto the base plate by employing the sliding motion facilitated by the motor-actuated flaps. Once the rings are securely placed, the first step is finalized.<br> 
+<b>Step 2</b>: A lifting mechanism is activated. This mechanism utilizes the concept of rack and pinion, wherein a vertical rectangular frame houses the base plate. The rack rail is connected to two parallel opposite rods, while two motor actuated pinion gears are employed. These pinion gears rotate in opposite directions, creating a combined motion either upward or downward as per the operator's input. The rack seamlessly slides over the pinion gears, resulting in a smooth and rapid movement. As a result, the base plate is elevated, effectively completing the picking mechanism's operation.
+</p>
+
+
+
+
+
 ### Loading and Shooting Mechanism
 
 ![Shooting Mechanism](/images/Shooting_Mechanism.gif)
