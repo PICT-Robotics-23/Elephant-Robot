@@ -13,7 +13,7 @@
 | Name | Usage  |
 |-----------|-----------|
 | IG 32 Planetory DC Geared motor| Actuate base flaps to slide-in the rings on the base plate. |
-|IG 42 Planetory DC Geared motor| Rotate the pinion gears|
+|IG 42 Planetory DC Geared motor| Rotate the pinion gears.|
 | Rack and Pinion assembly| Used for converting rotational motion of <br> motors to linear motion, generating the lift process. |
 
 <b>Working</b>
@@ -30,6 +30,19 @@ The picking mechanism functions through a sequential two-step process. <br>
 ### Loading and Shooting Mechanism
 
 ![Shooting Mechanism](/images/Shooting_Mechanism.gif)
+
+**Components**
+| Name | Usage  |
+|-----------|-----------|
+| IG 32 Planetory DC Geared motor| Actuate 3D printed flaps to load the ring. |
+| Magnum 775 Planetory DC Geared motor| Rotate the Polymer acrylic wheels used for shooting.|
+
+**Working**
+<p align="justify">
+The mechanism following the picking mechanism comprises two primary sub-modules: The loading mechanism and the shooting mechanism. Initially, the ring stack is meticulously aligned within the ring chamber, ensuring precision in subsequent steps. To meet the game's objective of shooting a single ring towards the pole, the picking lift is engaged to lift a single ring with accuracy.  <br>
+<b>Loading sub-module</b>: It incorporates two 3D printed flaps controlled by motors, which operate in opposing directions. These flaps effectively push the single ring positioned in front of them, generating a combined outward force.<br> 
+<b>Shooting sub-module</b>: It features two Polymer acrylic wheels, actuated by motors rotating in opposite directions. To achieve maximum torque, a rubber coating is added to improve friction between the ring and the wheel. The ring propelled by flaps in the previous step, passes through these wheels. The rotary motion of the wheels, transformed into a linear projectile trajectory, imparts a net torque to the ring, propelling it with force in the forward direction and with precision towards the designated target.
+</p>
 
 Check [here](https://drive.google.com/drive/folders/12eOtcUv3KmfZOIFXidKJ_DFHE5_mUBqX?usp=drive_link) for the functional demonstration of Elephant Robot.
 
