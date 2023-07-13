@@ -9,14 +9,16 @@
 
 ![Picking Mechanism](/images/Picking_Mechanism.gif)
 
-<br><b>Components</b>
+
+**Components**
+
 | Name | Usage  |
 |-----------|-----------|
-| IG 32 Planetory DC Geared motor| Actuate base flaps to slide-in the rings on the base plate. |
-|IG 42 Planetory DC Geared motor| Rotate the pinion gears.|
+| IG 32 Planetary DC Geared motor| Actuate base flaps to slide-in the rings on the base plate. |
+|IG 42 Planetary DC Geared motor| Rotate the pinion gears.|
 | Rack and Pinion assembly| Used for converting rotational motion of <br> motors to linear motion, generating the lift process. |
 
-<b>Working</b>
+**Working**
 <p align="justify">
 The picking mechanism functions through a sequential two-step process. <br>
 <b>Step 1</b>: The stack of rings is loaded onto the base plate by employing the sliding motion facilitated by the motor-actuated flaps. Once the rings are securely placed, the first step is finalized.<br> 
@@ -34,8 +36,8 @@ The picking mechanism functions through a sequential two-step process. <br>
 **Components**
 | Name | Usage  |
 |-----------|-----------|
-| IG 32 Planetory DC Geared motor| Actuate 3D printed flaps to load the ring. |
-| Magnum 775 Planetory DC Geared motor| Rotate the Polymer acrylic wheels used for shooting.|
+| IG 32 Planetary DC Geared motor| Actuate 3D printed flaps to load the ring. |
+| Magnum 775 Planetary DC Geared motor| Rotate the Polymer acrylic wheels used for shooting.|
 
 **Working**
 <p align="justify">
@@ -44,11 +46,77 @@ The mechanism following the picking mechanism comprises two primary sub-modules:
 <b>Shooting sub-module</b>: It features two Polymer acrylic wheels, actuated by motors rotating in opposite directions. To achieve maximum torque, a rubber coating is added to improve friction between the ring and the wheel. The ring propelled by flaps in the previous step, passes through these wheels. The rotary motion of the wheels, transformed into a linear projectile trajectory, imparts a net torque to the ring, propelling it with force in the forward direction and with precision towards the designated target.
 </p>
 
-Check [here](https://drive.google.com/drive/folders/12eOtcUv3KmfZOIFXidKJ_DFHE5_mUBqX?usp=drive_link) for the functional demonstration of Elephant Robot.
+ [Functional demonstration of Elephant Robot.](https://drive.google.com/drive/folders/12eOtcUv3KmfZOIFXidKJ_DFHE5_mUBqX?usp=drive_link)
 
 ## Design Plan
 
 ### What will be automated?
+<p align="justify">
+Primary focus lies on to automate lifting and loading process.<br>
+To shot the perfectly the top most ring within the ring must be perfectly aligned with the flaps. For this to achieve the motor responsible for linear motion of the ring stack should rotate just enough so that the stack rise thickness equal to the width of ring.<br>
+This proposes that the motor should be operated in position controlled close loop system. To figure out how much the motor has rotated, the sensor which was proposed was to use a magnetic encoder mounted on the shaft of motor.<br>
+Instead of using encoder to receive the feedback a distance sensor was utilized to measure the distance of the base plate onto which the stack rests. This not only eliminates the fact that encoders cannot take into account the slippage of gear but provide a direct feedback of the ring position.<br>
+Once the ring aligns perfectly, which can be achieved using a control loop algorithm such as PID, the loading motor can be actuated to shoot the ring by feeding into the roller mechanism.
+
+## System Design
+
+With proposed ideology decisions  were made to use Raspberry Pi to perform the automation task and ESP32 to perform the manual operations such as handing locomotive and shooting system.
+
+
+### Motor Division
+
+```mermaid
+    flowchart TD
+        A(LOCOMOTION) --> C(M1)
+        A --> B(M2)
+        A --> D(M3)
+        A --> E(M4)
+        A --> F(Base Flaps)
+        
+        G(SHOOT) --> H(Linear actuator)
+        G --> I(Roller)
+
+        J(PICK/LOAD) --> L(Rack)
+        J --> M(Flaps)
+```
+
+Motors were categorized  based on the operation they perform.<br>
+**Locomotion**
+- M1, M2, M3, M4 are the motors working in unison to locomote the robot. Since a X-omni drive was utilized 4 motor were needed.
+- BaseFlaps motors are responsible to slide-in the rings on the base plate which lifts the ring stack to shooting mechanism.
+
+**Shoot**
+- Linear actuator helped to get the right angle of launch for the rings.
+- Motors attached to rollers spun at the right speed to launch the ring.
+
+**Pick**
+- Motors connected to rack were used to lift the stack of rings.
+- Motors connected to flaps were used to load the ring into the shooting rollers.
+
+ 
+
+### Ideation
+```mermaid
+    flowchart LR
+        subgraph COMPUTING DEVICES
+            direction LR
+                A(RaspPi) == ros_serial ==> B(ESP32)
+                C(LAPTOP) == SSH ==> A
+        end
+
+        D(PS4) --> B
+        B --> E(LOCOMOTION)
+        A --> F(PICK/LOAD)
+        B --> J(SHOOT)
+
+        G(MPU6050) --> A
+    
+        I(DISTANCE SENSOR) --> A 
+        
+```
+ESP32 was assigned to control the locomotion and shooting system while receiving the control signals from the operator using PS4 controller via bluetooth media.
+The control signal was then passed to Raspberry Pi through serial communication which controlled the Pick-Load system.<br>
+**ROS** was deployed on Raspberry Pi to handle the simultaneous task on receiving data from the sensor and control signal form ESP32, controlling the motors.
 
 ## Execution
 
@@ -58,6 +126,15 @@ Stage 1 was developed with the objective of enabling manual locomotion control f
 In order to interface with the hardware, the Raspberry Pi's GPIO pins were employed to regulate the Pulse Width Modulation (PWM) signals. To effectively assign specific PWM values to the corresponding Raspberry Pi pins, the RPi.GPIO library was leveraged.
 
 This project serves as a foundational framework for controlling locomotion in a precise and customizable manner. By providing a user-friendly interface through the turtlesim_teleop key package, users can manually operate the 4-wheel holonomic drive system with ease. The integration of the Raspberry Pi 4B, along with its GPIO pins and the RPi.GPIO library, offers a reliable and efficient solution for translating software commands into physical motion.
+
+```mermaid
+    flowchart LR
+    A([teleop_keyboard]) -- /cmd_vel - Twist--> B([locomotion_driver])
+    B -.-> Motors
+    Laptop -.-> A
+```
+
+
 #### Description of scripts
 
 
@@ -76,6 +153,7 @@ UART data transfer between the ESP32 and RPi utilized custom messages. Motors, c
 
 - **MotorArray Message**:
   - Array : Facilitates simultaneous transmission of multiple motor control sets
+
 ```mermaid
 graph LR
     PS4((PS4 Controller)) --> ESP32((ESP32 Microcontroller))
@@ -138,6 +216,56 @@ RPi4 ==>|USB CAM| Display((Mobile Screen))
 ```
 
 ### ROSGRAPH
-
+![Ros Graph](/images/rosgraph.jpeg)
 
 ## Locomotion Automation?
+
+
+**Site-Map**
+
+├── images
+│   ├── ER.png
+│   ├── Picking_Mechanism.gif
+│   ├── rosgraph.jpeg
+│   └── Shooting_Mechanism.gif
+│
+├── launch
+│   └── elephant_robot.launch
+│
+├── msg
+│   ├── motorArray.msg
+│   └── motor.msg
+│
+├── src
+│    ├── CLI
+│    │   ├── CLI.py
+│    │   ├── CLI_test.py
+│    │   └── requirements.txt
+│    ├── ESP32
+│    │   └── ESP32.ino
+│    ├── STAGE_1
+│    │   └── locomotion_driver.py
+│    ├── STAGE_2
+│    │   ├── load_driver.py
+│    │   ├── pick_driver.py
+│    │   └── uart.py
+│    └── STAGE_3
+│        ├── mpu_interface.py
+│        ├── test
+│        │   ├── df_tof.py
+│        │   ├── encoder
+│        │   │   ├── encoder.py
+│        │   │   └── enco_lib.py
+│        │   ├── limit_switch.py
+│        │   ├── mpu_lib.py
+│        │   ├── pick_test.py
+│        │   ├── sensor_driver.py
+│        │   └── tof_with_filter.py
+│        └── tof_interface.py
+│
+├── launch.sh
+│
+├── CMakeLists.txt
+├── package.xml
+│
+└── README.md
