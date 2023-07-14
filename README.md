@@ -1,21 +1,29 @@
-# Elephant-Robot
+<!-- # Elephant-Robot -->
+<h1><center>Elephant-Robot</h1>
 
 ![ER](/images/ER.png)
 
-## Mechanisms
+<!-- ## Mechanisms -->
+
+<h2><center>Mechanisms</h2>
+
  
 
-### Picking Mechanism
+<!-- ### Picking Mechanism -->
+<h3>Picking Mechanism</h3>
 
-![Picking Mechanism](/images/Picking_Mechanism.gif)
 
+<!-- ![Picking Mechanism](/images/Picking_Mechanism.gif) -->
+
+<img src="/images/Picking_Mechanism.gif" width="900" height="506"/>
+<br>
 
 **Components**
 
 | Name | Usage  |
 |-----------|-----------|
-| IG 32 Planetary DC Geared motor| Actuate base flaps to slide-in the rings on the base plate. |
-|IG 42 Planetary DC Geared motor| Rotate the pinion gears.|
+| IG 32 Planetary DC Geared motor| Actuates the base flaps to slide-in the rings on the base plate. |
+|IG 42 Planetary DC Geared motor| Rotates the pinion gears.|
 | Rack and Pinion assembly| Used for converting rotational motion of <br> motors to linear motion, generating the lift process. |
 
 **Working**
@@ -31,13 +39,15 @@ The picking mechanism functions through a sequential two-step process. <br>
 
 ### Loading and Shooting Mechanism
 
-![Shooting Mechanism](/images/Shooting_Mechanism.gif)
+<!-- ![Shooting Mechanism](/images/Shooting_Mechanism.gif) -->
+<img src="/images/Shooting_Mechanism.gif" width="900" height="900"/>
+<br>
 
 **Components**
 | Name | Usage  |
 |-----------|-----------|
 | IG 32 Planetary DC Geared motor| Actuate 3D printed flaps to load the ring. |
-| Magnum 775 Planetary DC Geared motor| Rotate the Polymer acrylic wheels used for shooting.|
+| Magnum 775 Planetary DC Geared motor| Rotates the Polymer acrylic wheels used for shooting.|
 
 **Working**
 <p align="justify">
@@ -48,22 +58,25 @@ The mechanism following the picking mechanism comprises two primary sub-modules:
 
  [Functional demonstration of Elephant Robot.](https://drive.google.com/drive/folders/12eOtcUv3KmfZOIFXidKJ_DFHE5_mUBqX?usp=drive_link)
 
-## Design Plan
+<!-- ## Design Plan -->
+<h2><center>Design Plan</h2>
 
-### What will be automated?
+<h3>What will be automated?</h3>
 <p align="justify">
-Primary focus lies on to automate lifting and loading process.<br>
-To shot the perfectly the top most ring within the ring must be perfectly aligned with the flaps. For this to achieve the motor responsible for linear motion of the ring stack should rotate just enough so that the stack rise thickness equal to the width of ring.<br>
+The primary focus lies on to automate lifting and loading process.<br><br>
+To shot the rings perfectly the top most ring within the  stack must be perfectly aligned with the flaps. For this to happen the motors responsible for linear motion of the ring stack should rotate just enough so that the stack rises equal to the width of a ring.
 This proposes that the motor should be operated in position controlled close loop system. To figure out how much the motor has rotated, the sensor which was proposed was to use a magnetic encoder mounted on the shaft of motor.<br>
-Instead of using encoder to receive the feedback a distance sensor was utilized to measure the distance of the base plate onto which the stack rests. This not only eliminates the fact that encoders cannot take into account the slippage of gear but provide a direct feedback of the ring position.<br>
-Once the ring aligns perfectly, which can be achieved using a control loop algorithm such as PID, the loading motor can be actuated to shoot the ring by feeding into the roller mechanism.
+Instead of using encoder to receive the feedback a <b>distance sensor</b> was utilized to measure the distance of the base plate onto which the stack rests. This not only eliminates the fact that encoders cannot take into account the slippage of gear but provide a direct feedback of the ring position.
+Once the ring aligns perfectly aligns with the flaps, which can be achieved using a control loop algorithm such as PID, the loading motor can be actuated to shoot the ring by feeding into the roller mechanism.
+<br>
+<br>Not to mention a IMU sensor will be utilized to measure the launch angle of rings
 
-## System Design
+<h3>System Design</h3>
 
-With proposed ideology decisions  were made to use Raspberry Pi to perform the automation task and ESP32 to perform the manual operations such as handing locomotive and shooting system.
+With proposed ideology decisions  were made to use Raspberry Pi to perform the automation task and ESP32 to perform the manual operations such as handing locomotive and shooting system while communicating with PS4 controller to receive control signals.
 
 
-### Motor Division
+<h4>Motor Categorization</h4>
 
 ```mermaid
     flowchart TD
@@ -79,6 +92,7 @@ With proposed ideology decisions  were made to use Raspberry Pi to perform the a
         J(PICK/LOAD) --> L(Rack)
         J --> M(Flaps)
 ```
+<br>
 
 Motors were categorized  based on the operation they perform.<br>
 **Locomotion**
@@ -86,16 +100,17 @@ Motors were categorized  based on the operation they perform.<br>
 - BaseFlaps motors are responsible to slide-in the rings on the base plate which lifts the ring stack to shooting mechanism.
 
 **Shoot**
-- Linear actuator helped to get the right angle of launch for the rings.
+- Linear actuator helped to get the right launch angle for the rings.
 - Motors attached to rollers spun at the right speed to launch the ring.
 
-**Pick**
+**Pick/Load**
 - Motors connected to rack were used to lift the stack of rings.
 - Motors connected to flaps were used to load the ring into the shooting rollers.
 
  
 
-### Ideation
+<h4>Layout</h4>
+
 ```mermaid
     flowchart LR
         subgraph COMPUTING DEVICES
@@ -114,22 +129,25 @@ Motors were categorized  based on the operation they perform.<br>
         I(DISTANCE SENSOR) --> A 
         
 ```
-ESP32 was assigned to control the locomotion and shooting system while receiving the control signals from the operator using PS4 controller via bluetooth media.
+
+ESP32 was assigned to control the locomotion and shooting system while receiving the control signals from the operator using PS4 controller via bluetooth.
 The control signal was then passed to Raspberry Pi through serial communication which controlled the Pick-Load system.<br>
-**ROS** was deployed on Raspberry Pi to handle the simultaneous task on receiving data from the sensor and control signal form ESP32, controlling the motors.
+**ROS** was deployed on Raspberry Pi to handle the simultaneous task of receiving data from the sensor and control signal form ESP32 while controlling the motors.
 
-## Execution
+<h2><center>Execution</h2>
 
-### Stage I
-Stage 1 was developed with the objective of enabling manual locomotion control for a 4-wheel holonomic drive system. This functionality was achieved by integrating the turtlesim_teleop key package with a Raspberry Pi 4B. To facilitate the control of motor movements, the project utilized the Twist message type from the Geometric messages library.
+<h3>Stage I</h3>
+<p align="justify">
+Stage I served as a foundation to test the designed system.
+The main objective was to enable manual locomotion control for a 4-wheel holonomic drive system. This functionality was achieved by integrating  teleop_twist_keyboard package. To facilitate the control of motor movements, the project utilized the Twist message type from the Geometric messages library.
 
 In order to interface with the hardware, the Raspberry Pi's GPIO pins were employed to regulate the Pulse Width Modulation (PWM) signals. To effectively assign specific PWM values to the corresponding Raspberry Pi pins, the RPi.GPIO library was leveraged.
+<p>
 
-This project serves as a foundational framework for controlling locomotion in a precise and customizable manner. By providing a user-friendly interface through the turtlesim_teleop key package, users can manually operate the 4-wheel holonomic drive system with ease. The integration of the Raspberry Pi 4B, along with its GPIO pins and the RPi.GPIO library, offers a reliable and efficient solution for translating software commands into physical motion.
 
 ```mermaid
     flowchart LR
-    A([teleop_keyboard]) -- /cmd_vel - Twist--> B([locomotion_driver])
+    A([teleop_twist_keyboard]) -- /cmd_vel - Twist--> B([locomotion_driver])
     B -.-> Motors
     Laptop -.-> A
 ```
