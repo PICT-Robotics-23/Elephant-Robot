@@ -145,94 +145,107 @@ In order to interface with the hardware, the Raspberry Pi's GPIO pins were emplo
 <p>
 
 
+
+
+
+<h4>rosrun elephant_robot locomotion_driver</h4>
+
+<!-- - **Locomotion**: -->
+
+- The script enables locomotion control for a robot using four-wheel drive.
+- A laptop remotely connects to the Raspberry Pi (Raspi) using SSH and the Raspi's IP address via terminal access. Once connected, the laptop launches the ROS master server and starts the locomotion_driver node and the teleop_keyboard node.
+- The teleop_keyboard node receives commands from the laptop's keyboard input.The teleop_keyboard node publishes speed and direction commands as a Twist message to the cmd_vel topic.
+- The locomotion_driver node subscribes to the cmd_vel topic to receive and interpret the robot's commands.
+- Kinematic equations are employed by the locomotion node to determine the required actions for the robot's movement.
+- The Raspi's RPi library connects the PWM pins to the Cytron MD 10 motor driver, which controls the motors responsible for the robot's locomotion.
+
+- This script serves as a pilot stage for integrating the Robot Operating System (ROS), Raspberry Pi, and the robot's hardware components. 
+
 ```mermaid
     flowchart LR
     A([teleop_twist_keyboard]) -- /cmd_vel - Twist--> B([locomotion_driver])
     B -.-> Motors
     Laptop -.-> A
 ```
-
-
-#### Description of scripts
-
-- **Locomotion**:
-
-    - The script enables locomotion control for a robot using four-wheel drive.
-    - A laptop remotely connects to the Raspberry Pi (Raspi) using SSH and the Raspi's IP address via terminal access. Once connected, the laptop launches the ROS master server and starts the locomotion_driver node and the teleop_keyboard node.
-    - The teleop_keyboard node receives commands from the laptop's keyboard input.The teleop_keyboard node publishes speed and direction commands as a Twist message to the cmd_vel topic.
-    - The locomotion_driver node subscribes to the cmd_vel topic to receive and interpret the robot's commands.
-    - Kinematic equations are employed by the locomotion node to determine the required actions for the robot's movement.
-    - The Raspi's RPi library connects the PWM pins to the Cytron MD 10 motor driver, which controls the motors responsible for the robot's locomotion.
-
-    - This script serves as a pilot stage for integrating the Robot Operating System (ROS), Raspberry Pi, and the robot's hardware components. 
-
-### Stage II
-Stage 2 of the project involved integrating the picking and loading mechanisms. The objective was to control these mechanisms using the Raspberry Pi 4's GPIO pins, following the methodology established in Stage 1. Serial communication was established between the Raspberry Pi 4 and the ESP32 microcontroller, enabling the Raspberry Pi 4 to receive PWM data from the PS4 controller via the ESP32. Furthermore, a display was connected to the Raspberry Pi 4 to provide real-time visualization of the PWM signals.
-
-This integration allowed for seamless control and actuation of the picking and loading mechanisms, expanding the capabilities of the Elephant-Robot. By leveraging the communication flow of PS4 → ESP32 → Raspberry Pi 4, the project team successfully incorporated additional mechanisms and ensured efficient control over the robot's functionalities.
-
+<h3>Stage II</h3>
+<p align="justify">
+Stage 2 of the project involved integrating the picking and loading mechanisms. The objective was to control these mechanisms using the Raspberry Pi 4's GPIO pins, following the methodology established in Stage 1 manually. Serial communication was established between the Raspberry Pi 4 and the ESP32 microcontroller, enabling the Raspberry Pi 4 to receive PWM data from the PS4 controller via the ESP32. <br>
+This integration allowed for seamless control and actuation of the picking and loading mechanisms, expanding the capabilities of the Elephant-Robot. By leveraging the communication flow of PS4 → ESP32 → Raspberry Pi 4.<br>
 UART data transfer between the ESP32 and RPi utilized custom messages. Motors, consisting of String, int, and int data types, conveyed motor control information. MotorArray handled an array input for simultaneous transmission. 
+</p>
 
-- **Motors Message**:
-  - Integer : Represents motor position
-  - Integer : Represents motor power
-  - String : Provides name
 
-- **MotorArray Message**:
-  - Array : Facilitates simultaneous transmission of multiple motor control sets
 
-```mermaid
-graph LR
-    PS4((PS4 Controller)) --> ESP32((ESP32 Microcontroller))
-    ESP32 --> RPi4((Raspberry Pi 4))
-    RPi4 --> Display((Display))
-```    
+<h4>rosrun elephant_robot uart.py</h4>
 
-#### Description of scripts
-- UART Node:
-    - Task 1:
-        - Responsible for establishing a serial connection between the ESP32 and Raspi.
-        - Handles serial data communication between the two devices.
-        - Uses the Pyserial library to collect and format data sent serially from ESP32.
-        - Adheres to the required baud rate for ESP32 and the port to which the ESP32 is connected to the Raspi.
-        - The serially transmitted data comprises commands sent by the ESP32, which is connected to a wireless controller operated by the robot operator.
-        - To reduce bit errors, a frame format is maintained that includes start bit, ack bit, and flag bits for reliable communication.
 
-    - Task 2:
-        - The UART node, after collecting and formatting the serially received data, publishes it to the cmd_motors topic using a custom message data structure (motor, motorArray).
-        - The data published includes actuation commands for the motor driver. The custom message data structure ensures that the actuation data is properly formatted and communicated to the other drivers.
+- Task 1:
+    - Responsible for establishing a serial connection between the ESP32 and Raspi.
+    - Handles serial data communication between the two devices.
+    - Uses the Pyserial library to collect and format data sent serially from ESP32.
+    - Adheres to the required baud rate for ESP32 and the port to which the ESP32 is connected to the Raspi.
+    - The serially transmitted data comprises commands sent by the ESP32, which is connected to a wireless controller operated by the robot operator.
+    - To reduce bit errors, a frame format is maintained that includes start bit, ack bit, and flag bits for reliable communication.
+
+- Task 2:
+    - The UART node, after collecting and formatting the serially received data, publishes it to the cmd_motors topic using a custom message data structure (motor, motorArray).
+    - The data published includes actuation commands for the motor driver. The custom message data structure ensures that the actuation data is properly formatted and communicated to the other drivers.
         
 <br>
 
-- Pick Driver Node:
+
+<h4>rosrun elephant_robot pick_driver.py</h4>
    - Acts as the second driver responsible for actuating the picking mechanism.
    - Subscribes to the cmd_motors topic, where the UART node publishes the data.
    - Interprets the received data and passes it through a mathematical model to generate the required actuation data signals for the motor driver.
    - The commands sent by the operator through the wireless controller serve as the basis for generating the actuation signals.
    - Uses a custom-made message data structure to publish the actuation data to the cmd_motors topic.
 
-- Load Driver Node:
-   - Similar to the pick driver node, it handles actuation for the load mechanism motors.
-   - Acts as the third driver in the system.
-   - Subscribes to the cmd_motors topic to receive actuation data published by the UART node.
-   - Interprets the received data and generates the required actuation signals for the motor driver.
-   - The purpose is to control the actuation of the load mechanism based on the commands sent by the operator.
+<br>
 
-The objective of this stage is to establish UART communication and wirelessly control the actuations of both the picking and load mechanisms. The UART node facilitates serial communication between the ESP32 and the Raspi, while the pick driver and load driver nodes interpret the received data and generate the necessary actuation signals for their respective mechanisms.
 
-## Stage III
+<h4>rosrun elephant_robot load_driver.py</h4>
 
-Stage 3 of the project focused on interfacing sensors with the Raspberry Pi and utilizing ROS (Robot Operating System) to access their values. Specifically, a Time-of-Flight (TOF) distance sensor and an MPU6050 sensor were integrated. The TOF distance sensor provided the distance from the base to the top of the plate, while the MPU6050 sensor measured the angle of the plate relative to the ground.
+- Similar to the pick driver node, it handles actuation for the load mechanism motors.
+- Acts as the third driver in the system.
+- Subscribes to the cmd_motors topic to receive actuation data published by the UART node.
+- Interprets the received data and generates the required actuation signals for the motor driver.
+- The purpose is to control the actuation of the load mechanism based on the commands sent by the operator.
 
+<h4>Custom ROS message</h4>
+
+Instead of utilizing pre-defined rosmsg we decide to build a custom rosmsg for motors.
+Each motor object has three parameters
+
+- Name: Identification for object.
+- Position: Current position of the motor shaft
+- Power: CUrrent speed of the motor shaft.
+
+To be able to transmit multiple motor objects onto a single topic an array of motors was created as a message itself which was published by uart node. 
+
+```mermaid
+graph LR
+    A([ESP-ROS bridge]) -- /cmd_motors - motorArray--> B([pick_driver])
+    A -- /cmd_motors - motorArray--> C([load_driver])
+    B -.-> Pick_Motors
+    C -.-> Load_Motors
+    ESP32 -.-> A
+```    
+
+
+<h3>Stage III</h3>
+
+<p align="justify">
+Stage 3 of the project focused on interfacing sensors with the Raspberry Pi and utilizing ROS to access their values. Specifically, a Time-of-Flight (TOF) distance sensor and an MPU6050 sensor were integrated. The TOF distance sensor provided the distance from the base to the top of the plate, while the MPU6050 sensor measured the angle of the plate relative to the ground.
 In the final stage, Stages 2 and 3 were integrated. All the sensor values were published using ROS, and a Command Line Interface (CLI) was developed to subscribe to these values and display them on the screen. This integration allowed for comprehensive monitoring and visualization of the robot's position and orientation, enhancing its overall control and functionality.
 
-#### Description of scripts
+<h4>Description of scripts</h4>
 
   
 
 - **Sensor Integration**:
 
-	- The MPU6050 and Time-of-Flight (TOF) distance sensor communicates with the 		 Raspberry Pi using I2C serial communication.
+	- The MPU6050 and Time-of-Flight (TOF) distance sensor communicates with the Raspberry Pi using I2C serial communication.
 
 	- MPU6050 provides us with the acceleration and gyroscopic data that is used to calculate the pitch, which directly translates to the angle of the shooting mechanism.
 
@@ -250,7 +263,7 @@ In the final stage, Stages 2 and 3 were integrated. All the sensor values were p
 
 		- MPU6050 : Angle of the shooting mechanism
 
-		- TF-LUNA : Distance of the base plate from the shooting mechanism
+		- TOF: Distance of the base plate from the shooting mechanism
 
 		- Shoot-PWM : PWM value passed to the shooting motors from esp32
 
@@ -262,23 +275,23 @@ In the final stage, Stages 2 and 3 were integrated. All the sensor values were p
 
 graph LR
 
-Angle[MPU6050] -->|I2C| RPi4((Raspberry Pi 4))
-
-TOF[TF-LUNA] -->|I2C| RPi4
-
-PWM[Shoot Speed] -->|ESP32| RPi4
-
-RPi4 ==>|USB CAM| Display((Mobile Screen))
-
+    A([ESP-ROS bridge]) -- /motorArray--> B([pick_driver])
+    A -- /cmd_motors - motorArray--> C([load_driver])
+    A -- /cmd_motors - motorArray--> D([CLI])
+    B -.-> Pick_Motors
+    C -.-> Load_Motors
+    ESP32 -.-> A
+    E([TOF interface]) -- /sensor_msg/Range --> D
+    F([MPU interface]) -- /Int32 --> D
 ```
 
-### ROSGRAPH
+<h4>RosGraph</h4>
+
 ![Ros Graph](/images/rosgraph.jpeg)
 
-## Locomotion Automation?
 
 
-**Site-Map**
+<h2>Site-Map</h2>
 ```
 ├── images
 │   ├── ER.png
