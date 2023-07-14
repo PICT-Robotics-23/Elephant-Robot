@@ -137,7 +137,16 @@ This project serves as a foundational framework for controlling locomotion in a 
 
 #### Description of scripts
 
+- **Locomotion**:
 
+    - The script enables locomotion control for a robot using four-wheel drive.
+    - A laptop remotely connects to the Raspberry Pi (Raspi) using SSH and the Raspi's IP address via terminal access. Once connected, the laptop launches the ROS master server and starts the locomotion_driver node and the teleop_keyboard node.
+    - The teleop_keyboard node receives commands from the laptop's keyboard input.The teleop_keyboard node publishes speed and direction commands as a Twist message to the cmd_vel topic.
+    - The locomotion_driver node subscribes to the cmd_vel topic to receive and interpret the robot's commands.
+    - Kinematic equations are employed by the locomotion node to determine the required actions for the robot's movement.
+    - The Raspi's RPi library connects the PWM pins to the Cytron MD 10 motor driver, which controls the motors responsible for the robot's locomotion.
+
+    - This script serves as a pilot stage for integrating the Robot Operating System (ROS), Raspberry Pi, and the robot's hardware components. 
 
 ### Stage II
 Stage 2 of the project involved integrating the picking and loading mechanisms. The objective was to control these mechanisms using the Raspberry Pi 4's GPIO pins, following the methodology established in Stage 1. Serial communication was established between the Raspberry Pi 4 and the ESP32 microcontroller, enabling the Raspberry Pi 4 to receive PWM data from the PS4 controller via the ESP32. Furthermore, a display was connected to the Raspberry Pi 4 to provide real-time visualization of the PWM signals.
@@ -162,6 +171,36 @@ graph LR
 ```    
 
 #### Description of scripts
+- UART Node:
+    - Task 1:
+        - Responsible for establishing a serial connection between the ESP32 and Raspi.
+        - Handles serial data communication between the two devices.
+        - Uses the Pyserial library to collect and format data sent serially from ESP32.
+        - Adheres to the required baud rate for ESP32 and the port to which the ESP32 is connected to the Raspi.
+        - The serially transmitted data comprises commands sent by the ESP32, which is connected to a wireless controller operated by the robot operator.
+        - To reduce bit errors, a frame format is maintained that includes start bit, ack bit, and flag bits for reliable communication.
+
+    - Task 2:
+        - The UART node, after collecting and formatting the serially received data, publishes it to the cmd_motors topic using a custom message data structure (motor, motorArray).
+        - The data published includes actuation commands for the motor driver. The custom message data structure ensures that the actuation data is properly formatted and communicated to the other drivers.
+        
+<br>
+
+- Pick Driver Node:
+   - Acts as the second driver responsible for actuating the picking mechanism.
+   - Subscribes to the cmd_motors topic, where the UART node publishes the data.
+   - Interprets the received data and passes it through a mathematical model to generate the required actuation data signals for the motor driver.
+   - The commands sent by the operator through the wireless controller serve as the basis for generating the actuation signals.
+   - Uses a custom-made message data structure to publish the actuation data to the cmd_motors topic.
+
+- Load Driver Node:
+   - Similar to the pick driver node, it handles actuation for the load mechanism motors.
+   - Acts as the third driver in the system.
+   - Subscribes to the cmd_motors topic to receive actuation data published by the UART node.
+   - Interprets the received data and generates the required actuation signals for the motor driver.
+   - The purpose is to control the actuation of the load mechanism based on the commands sent by the operator.
+
+The objective of this stage is to establish UART communication and wirelessly control the actuations of both the picking and load mechanisms. The UART node facilitates serial communication between the ESP32 and the Raspi, while the pick driver and load driver nodes interpret the received data and generate the necessary actuation signals for their respective mechanisms.
 
 ## Stage III
 
