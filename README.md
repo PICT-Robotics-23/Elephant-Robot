@@ -78,20 +78,10 @@ With proposed ideology decisions  were made to use Raspberry Pi to perform the a
 
 <h4>Motor Categorization</h4>
 
-```mermaid
-    flowchart TD
-        A(LOCOMOTION) --> C(M1)
-        A --> B(M2)
-        A --> D(M3)
-        A --> E(M4)
-        A --> F(Base Flaps)
-        
-        G(SHOOT) --> H(Linear actuator)
-        G --> I(Roller)
 
-        J(PICK/LOAD) --> L(Rack)
-        J --> M(Flaps)
-```
+
+![motor](/images/MotorCat.png)
+
 <br>
 
 Motors were categorized  based on the operation they perform.<br>
@@ -111,24 +101,7 @@ Motors were categorized  based on the operation they perform.<br>
 
 <h4>Layout</h4>
 
-```mermaid
-    flowchart LR
-        subgraph COMPUTING DEVICES
-            direction LR
-                A(RaspPi) == ros_serial ==> B(ESP32)
-                C(LAPTOP) == SSH ==> A
-        end
-
-        D(PS4) --> B
-        B --> E(LOCOMOTION)
-        A --> F(PICK/LOAD)
-        B --> J(SHOOT)
-
-        G(MPU6050) --> A
-    
-        I(DISTANCE SENSOR) --> A 
-        
-```
+![layout](/images/idea.png)
 
 ESP32 was assigned to control the locomotion and shooting system while receiving the control signals from the operator using PS4 controller via bluetooth.
 The control signal was then passed to Raspberry Pi through serial communication which controlled the Pick-Load system.<br>
@@ -161,12 +134,7 @@ In order to interface with the hardware, the Raspberry Pi's GPIO pins were emplo
 
 - This script serves as a pilot stage for integrating the Robot Operating System (ROS), Raspberry Pi, and the robot's hardware components. 
 
-```mermaid
-    flowchart LR
-    A([teleop_twist_keyboard]) -- /cmd_vel - Twist--> B([locomotion_driver])
-    B -.-> Motors
-    Laptop -.-> A
-```
+![stage1](/images/Stage1.png)
 <h3>Stage II</h3>
 <p align="justify">
 Stage 2 of the project involved integrating the picking and loading mechanisms. The objective was to control these mechanisms using the Raspberry Pi 4's GPIO pins, following the methodology established in Stage 1 manually. Serial communication was established between the Raspberry Pi 4 and the ESP32 microcontroller, enabling the Raspberry Pi 4 to receive PWM data from the PS4 controller via the ESP32. <br>
@@ -223,14 +191,7 @@ Each motor object has three parameters
 
 To be able to transmit multiple motor objects onto a single topic an array of motors was created as a message itself which was published by uart node. 
 
-```mermaid
-graph LR
-    A([ESP-ROS bridge]) -- /cmd_motors - motorArray--> B([pick_driver])
-    A -- /cmd_motors - motorArray--> C([load_driver])
-    B -.-> Pick_Motors
-    C -.-> Load_Motors
-    ESP32 -.-> A
-```    
+![stage2](/images/Stage2.png)    
 
 
 <h3>Stage III</h3>
@@ -270,20 +231,7 @@ In the final stage, Stages 2 and 3 were integrated. All the sensor values were p
 	- argparser library is used to allow the user to only display data that is wanted. The user can disable certain parameters by initializing them to zero while launching the script. By default, all the parameters are enabled.
 
   
-
-```mermaid
-
-graph LR
-
-    A([ESP-ROS bridge]) -- /motorArray--> B([pick_driver])
-    A -- /cmd_motors - motorArray--> C([load_driver])
-    A -- /cmd_motors - motorArray--> D([CLI])
-    B -.-> Pick_Motors
-    C -.-> Load_Motors
-    ESP32 -.-> A
-    E([TOF interface]) -- /sensor_msg/Range --> D
-    F([MPU interface]) -- /Int32 --> D
-```
+![stage3](/images/stage3.png)
 
 <h4>RosGraph</h4>
 
